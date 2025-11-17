@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fantasy Football Cheat Sheet</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1>Fantasy Football Cheat Sheet</h1>
+    <div id="controls">
+      <input type="text" id="filter" placeholder="Filter players..." autocomplete="off" />
+      <div id="position-buttons" class="position-filter">
+        <button data-pos="" class="pos-btn active">All</button>
+        <button data-pos="QB" class="pos-btn">QB</button>
+        <button data-pos="RB" class="pos-btn">RB</button>
+        <button data-pos="WR" class="pos-btn">WR</button>
+        <button data-pos="TE" class="pos-btn">TE</button>
+      </div>
+
+      <button id="add-tier">+ Add Tier</button>
+      <button id="save">💾 Save</button>
+      <button id="reset">🔄 Reset</button>
+    </div>
+  </header>
+
+
+  <main id="tiers">
+    <!-- Example starting tier -->
+    <div class="tier" data-tier="1">
+      <h2>Tier 1</h2>
+      <ul id="tier-1" class="player-list"></ul>
+    </div>
+
+    <!-- Unranked always last -->
+    <div class="tier" data-tier="unranked">
+      <h2>Unranked Players</h2>
+      <ul id="tier-unranked" class="player-list"></ul>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
