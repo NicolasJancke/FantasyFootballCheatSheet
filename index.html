@@ -1,494 +1,621 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fantasy Football Cheat Sheet</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Football Cheat Sheet</title>
 
-<!-- SortableJS -->
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-  }
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
 
-  /* Two-column layout */
-  #app {
-    display: flex;
-    height: 100vh;
-    padding: 1rem;
-    gap: 1rem;
-    box-sizing: border-box;
-  }
+        /* Two-column layout */
+        #app {
+            display: flex;
+            height: 100vh;
+            padding: 1rem;
+            gap: 1rem;
+            box-sizing: border-box;
+        }
 
-  /* LEFT: Ranked tiers */
-  #ranked-col {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 1rem;
-    border-right: 1px solid #ccc;
-  }
+        /* LEFT: Ranked tiers */
+        #ranked-col {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 1rem;
+            border-right: 1px solid #ccc;
+        }
 
-  /* RIGHT: Unranked list and filters */
-  #unranked-col {
-    width: 350px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+        /* RIGHT: Unranked list and filters */
+        #unranked-col {
+            width: 350px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
 
-  h2 {
-    margin: 0.3rem 0;
-  }
+        h2 {
+            margin: 0.3rem 0;
+        }
 
-  .tier {
-    margin-bottom: 1rem;
-  }
+        .tier {
+            margin-bottom: 1rem;
+        }
 
-  .player-list {
-    list-style: none;
-    padding: 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    min-height: 40px;
-  }
+        .player-list {
+            list-style: none;
+            padding: 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            min-height: 40px;
+        }
 
-  .player {
-    background: #fff;
-    border-bottom: 1px solid #eee;
-    padding: 0.4rem 0.6rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+        .player {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 0.4rem 0.6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: grab;
+            /* Added grab cursor */
+        }
 
-  .player:last-child {
-    border-bottom: none;
-  }
+        .player:last-child {
+            border-bottom: none;
+        }
 
-  .player-info {
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-  }
+        .player-info {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+        }
 
-  .position-tag {
-    padding: 0.15rem 0.35rem;
-    border-radius: 4px;
-    color: white;
-    font-weight: bold;
-    font-size: 0.75rem;
-  }
+        .position-tag {
+            padding: 0.15rem 0.35rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
 
-  .position-QB { background: #007bff; }
-  .position-RB { background: #28a745; }
-  .position-WR { background: #ffc107; color: black; }
-  .position-TE { background: #fd7e14; }
+        .position-QB {
+            background: #007bff;
+        }
 
-  .rank-input {
-    width: 55px;
-    text-align: center;
-  }
+        .position-RB {
+            background: #28a745;
+        }
 
-  /* right column elements */
-  #filter {
-    padding: 0.4rem;
-    border-radius: 4px;
-    border: 1px solid #aaa;
-  }
+        .position-WR {
+            background: #ffc107;
+            color: black;
+        }
 
-  #position-buttons {
-    display: flex;
-    gap: 0.4rem;
-  }
+        .position-TE {
+            background: #fd7e14;
+        }
 
-  .pos-btn {
-    padding: 0.35rem 0.6rem;
-    border: 1px solid #888;
-    border-radius: 4px;
-    background: #eee;
-    cursor: pointer;
-  }
+        .rank-input {
+            width: 55px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
 
-  .pos-btn.active {
-    background: #0077ff;
-    color: white;
-    border-color: #0055cc;
-  }
+        /* right column elements */
+        #filter {
+            padding: 0.4rem;
+            border-radius: 4px;
+            border: 1px solid #aaa;
+        }
 
-  #tier-unranked {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0.3rem;
-  }
-</style>
+        #position-buttons {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .pos-btn {
+            padding: 0.35rem 0.6rem;
+            border: 1px solid #888;
+            border-radius: 4px;
+            background: #eee;
+            cursor: pointer;
+            flex: 1;
+            /* Make buttons equal width */
+        }
+
+        .pos-btn.active {
+            background: #0077ff;
+            color: white;
+            border-color: #0055cc;
+        }
+
+        #tier-unranked {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.3rem;
+        }
+    </style>
 </head>
+
 <body>
 
-<div id="app">
+    <div id="app">
 
-  <!-- LEFT COLUMN: RANKED PLAYERS -->
-  <div id="ranked-col">
-    <div class="tier" data-tier="1">
-      <h2>Tier 1</h2>
-      <ul id="tier-1" class="player-list"></ul>
+            <div id="ranked-col">
+                    <div class="tier" data-tier="1">
+                      <h2>Tier 1</h2>
+                      <ul id="tier-1" class="player-list"></ul>
+                    </div>
+               
+                <div id="controls-section" style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                      <button id="add-tier" class="pos-btn" style="flex: 1;">Add Tier</button>
+                      <button id="save" class="pos-btn" style="flex: 1; background: #28a745; color: white;">Save
+                    (Local)</button>
+                      <button id="reset" class="pos-btn" style="flex: 1;">Reset</button>
+                      <button id="export-json" class="pos-btn" style="flex: 1;">Export JSON</button>
+                      <input type="file" id="import-json" accept="application/json" style="display:none;">
+                      <button id="import-json-btn" class="pos-btn" style="flex: 1;">Import JSON</button>
+                    </div>
+              </div>
+
+            <div id="unranked-col">
+                <input id="filter" placeholder="Filter unranked players">
+
+                <div id="position-buttons">
+                      <button class="pos-btn active" data-pos="">All</button>
+                      <button class="pos-btn" data-pos="QB">QB</button>
+                      <button class="pos-btn" data-pos="RB">RB</button>
+                      <button class="pos-btn" data-pos="WR">WR</button>
+                      <button class="pos-btn" data-pos="TE">TE</button>
+                    </div>
+
+                <ul id="tier-unranked" class="player-list" data-tier="unranked"></ul>
+              </div>
+
     </div>
 
-    <button id="add-tier">Add Tier</button>
-    <button id="save">Save</button>
-    <button id="reset">Reset</button>
-    <button id="export-json">Export JSON</button>
-    <input type="file" id="import-json" accept="application/json" style="display:none;">
-    <button id="import-json-btn">Import JSON</button>
+    <script>
+        /* -------------------------
+              GLOBALS & CONSTANTS
+        ------------------------- */
+        let allPlayers = [];
+        let activePosFilter = "";
+        const sortableMap = new Map();
+        const CACHE_KEY_PLAYERS = "cachedSleeperPlayers";
+        const CACHE_KEY_TIMESTAMP = "cacheTimestamp";
+        const CACHE_EXPIRY_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+        const RANKINGS_KEY = "rankings";
+        const TIER_LAYOUT_KEY = "tierLayout";
+        const RANKED_COL = document.getElementById("ranked-col");
 
-  </div>
 
-  <!-- RIGHT COLUMN: UNRANKED PLAYERS -->
-  <div id="unranked-col">
-    <input id="filter" placeholder="Filter unranked players">
+        /* -------------------------
+              PLAYER CACHING & FETCH
+        ------------------------- */
+        async function fetchPlayers() {
+            const cachedPlayers = localStorage.getItem(CACHE_KEY_PLAYERS);
+            const cachedTime = localStorage.getItem(CACHE_KEY_TIMESTAMP);
+            const now = Date.now();
 
-    <div id="position-buttons">
-      <button class="pos-btn active" data-pos="">All</button>
-      <button class="pos-btn" data-pos="QB">QB</button>
-      <button class="pos-btn" data-pos="RB">RB</button>
-      <button class="pos-btn" data-pos="WR">WR</button>
-      <button class="pos-btn" data-pos="TE">TE</button>
-    </div>
+            // Check for valid cache
+            if (cachedPlayers && cachedTime && (now - parseInt(cachedTime, 10)) < CACHE_EXPIRY_MS) {
+                console.log("Loading players from local cache.");
+                return JSON.parse(cachedPlayers);
+            }
 
-    <ul id="tier-unranked" class="player-list" data-tier="unranked"></ul>
-  </div>
+            console.log("Fetching fresh players from Sleeper API...");
+            try {
+                const resp = await fetch("https://api.sleeper.app/v1/players/nfl");
+                const data = await resp.json();
 
-</div>
-
-<script>
-/* -------------------------
-      GLOBALS
-------------------------- */
-let allPlayers = [];
-let activePosFilter = "";
-const sortableMap = new Map();
-
-/* -------------------------
-      FETCH PLAYERS
-------------------------- */
-async function fetchPlayers() {
-  try {
-    const resp = await fetch("https://api.sleeper.app/v1/players/nfl");
-    return await resp.json();
-  } catch (e) {
-    console.error("Sleeper API error:", e);
-    return {};
-  }
-}
-
-/* -------------------------
-    PLAYER ELEMENT FACTORY
-------------------------- */
-function createPlayerElement(id, p) {
-  const li = document.createElement("li");
-  li.classList.add("player");
-  li.dataset.id = id;
-  li.dataset.name = `${p.first_name || ""} ${p.last_name || ""}`.trim().toLowerCase();
-  li.dataset.position = (p.position || "").toUpperCase();
-
-  const info = document.createElement("div");
-  info.classList.add("player-info");
-
-  const tag = document.createElement("span");
-  tag.classList.add("position-tag", `position-${li.dataset.position}`);
-  tag.textContent = li.dataset.position;
-
-  const label = document.createElement("span");
-  const team = p.team ? ` (${p.team})` : "";
-  label.textContent = `${p.first_name || ""} ${p.last_name || ""}${team}`;
-
-  const rankInput = document.createElement("input");
-  rankInput.type = "number";
-  rankInput.min = 1;
-  rankInput.classList.add("rank-input");
-  rankInput.addEventListener("change", () => handleRankInput(li, rankInput));
-
-  info.appendChild(tag);
-  info.appendChild(label);
-
-  li.appendChild(info);
-  li.appendChild(rankInput);
-
-  return li;
-}
-
-/* -------------------------
-      SORTABLE HANDLING
-------------------------- */
-function initSortable(list, allowPut = true) {
-  if (!list) return;
-
-  if (sortableMap.has(list)) {
-    sortableMap.get(list).destroy();
-    sortableMap.delete(list);
-  }
-
-  const sortable = new Sortable(list, {
-    group: { name: "tiers", pull: true, put: allowPut },
-    animation: 150,
-    onEnd: () => {
-      updateRanks();
-      saveDelayed();
-    }
-  });
-
-  sortableMap.set(list, sortable);
-}
-
-/* -------------------------
-      UPDATE RANKS
-------------------------- */
-function updateRanks() {
-  document.querySelectorAll(".tier").forEach(tier => {
-    if (tier.dataset.tier === "unranked") return;
-
-    const players = tier.querySelectorAll(".player");
-    players.forEach((p, i) => {
-      const input = p.querySelector(".rank-input");
-      input.value = i + 1;
-    });
-  });
-}
-
-/* -------------------------
-  MANUAL RANK INPUT
-------------------------- */
-function handleRankInput(player, input) {
-  const tier = player.closest(".tier");
-  if (!tier || tier.dataset.tier === "unranked") return;
-
-  const list = tier.querySelector(".player-list");
-  const players = [...list.children];
-
-  let newRank = parseInt(input.value);
-  if (isNaN(newRank) || newRank < 1) newRank = 1;
-  if (newRank > players.length) newRank = players.length;
-
-  const curIndex = players.indexOf(player);
-  if (curIndex === newRank - 1) return;
-
-  list.insertBefore(player, players[newRank - 1] || null);
-  updateRanks();
-  saveDelayed();
-}
-
-/* -------------------------
-        SAVE
-------------------------- */
-let saveTimeout;
-function saveDelayed() {
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(saveRankings, 800);
-}
-
-function saveRankings() {
-  const data = {};
-  document.querySelectorAll(".player-list").forEach(list => {
-    data[list.id] = [...list.querySelectorAll(".player")].map(p => p.dataset.id);
-  });
-  localStorage.setItem("rankings", JSON.stringify(data));
-}
-
-function loadRankings() {
-  const saved = JSON.parse(localStorage.getItem("rankings") || "{}");
-  for (const [listId, ids] of Object.entries(saved)) {
-    const list = document.getElementById(listId);
-    if (!list) continue;
-    ids.forEach(id => {
-      const el = document.querySelector(`.player[data-id="${id}"]`);
-      if (el) list.appendChild(el);
-    });
-  }
-}
-
-/* -------------------------
-        FILTERING
-     (UNRANKED ONLY)
-------------------------- */
-function applyFilters() {
-  const nameFilter = filter.value.toLowerCase();
-
-  document.querySelectorAll("#tier-unranked .player").forEach(p => {
-    const matchName = !nameFilter || p.dataset.name.includes(nameFilter);
-    const matchPos = !activePosFilter || p.dataset.position === activePosFilter;
-    p.style.display = matchName && matchPos ? "" : "none";
-  });
-}
-
-/* -------------------------
-      INIT APP
-------------------------- */
-document.addEventListener("DOMContentLoaded", async () => {
-
-  /* Buttons for filtering */
-  document.querySelectorAll(".pos-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".pos-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      activePosFilter = btn.dataset.pos;
-      applyFilters();
-    });
-  });
-
-  filter.addEventListener("input", applyFilters);
-
-  document.getElementById("reset").addEventListener("click", () => {
-    localStorage.removeItem("rankings");
-    location.reload();
-  });
-
-  document.getElementById("save").addEventListener("click", saveRankings);
-
-  // ============================
-// EXPORT / IMPORT JSON
-// ============================
-
-// Export rankings as JSON file
-function exportRankingsJSON() {
-  const tiers = {};
-  document.querySelectorAll(".player-list").forEach((list) => {
-    const tierId = list.id;
-    tiers[tierId] = Array.from(list.querySelectorAll(".player")).map(
-      (p) => p.dataset.id
-    );
-  });
-
-  const blob = new Blob([JSON.stringify(tiers, null, 2)], {
-    type: "application/json",
-  });
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "rankings.json";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-// Apply imported data after Sleeper players exist
-function applyImportedRankings(imported) {
-  // Clear all lists first
-  document.querySelectorAll(".player-list").forEach((list) => {
-    list.innerHTML = "";
-  });
-
-  // For every tier in JSON, put matching players
-  for (const [tierId, playerIds] of Object.entries(imported)) {
-    const list = document.getElementById(tierId);
-    if (!list) {
-      console.warn("Tier not found in layout:", tierId);
-      continue;
-    }
-
-    playerIds.forEach((id) => {
-      const el = document.querySelector(`.player[data-id="${id}"]`);
-      if (el) list.appendChild(el);
-      else console.warn("Player not found in Sleeper data:", id);
-    });
-  }
-
-  updateRanks();
-  delayedSave();
-}
-
-// Read JSON and prepare to load it
-function importRankingsJSON(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const imported = JSON.parse(e.target.result);
-
-      // Wait until all players are loaded
-      const waitForPlayers = setInterval(() => {
-        if (document.querySelectorAll(".player").length > 0) {
-          clearInterval(waitForPlayers);
-          applyImportedRankings(imported);
+                // Cache the fresh data
+                localStorage.setItem(CACHE_KEY_PLAYERS, JSON.stringify(data));
+                localStorage.setItem(CACHE_KEY_TIMESTAMP, now.toString());
+                return data;
+            } catch (e) {
+                console.error("Sleeper API error:", e);
+                return {};
+            }
         }
-      }, 100);
-    } catch (err) {
-      alert("Invalid JSON file.");
-      console.error(err);
-    }
-  };
-  reader.readAsText(file);
-}
-
-// Wire export/import buttons
-document.getElementById("export-json").addEventListener("click", exportRankingsJSON);
-
-document.getElementById("import-json-btn").addEventListener("click", () => {
-  document.getElementById("import-json").click();
-});
-
-document.getElementById("import-json").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (file) importRankingsJSON(file);
-});
 
 
-  document.getElementById("add-tier").addEventListener("click", () => {
-    const existing = [...document.querySelectorAll(".tier")]
-      .map(t => t.dataset.tier)
-      .filter(t => t !== "unranked")
-      .map(Number);
+        /* -------------------------
+            PLAYER ELEMENT FACTORY
+        ------------------------- */
+        function createPlayerElement(id, p) {
+            const li = document.createElement("li");
+            li.classList.add("player");
+            li.dataset.id = id;
+            // Ensure name is always set for filtering
+            li.dataset.name = `${p.first_name || ""} ${p.last_name || ""}`.trim().toLowerCase();
+            li.dataset.position = (p.position || "").toUpperCase();
 
-    const next = existing.length ? Math.max(...existing) + 1 : 1;
+            const info = document.createElement("div");
+            info.classList.add("player-info");
 
-    const div = document.createElement("div");
-    div.classList.add("tier");
-    div.dataset.tier = next;
+            const tag = document.createElement("span");
+            tag.classList.add("position-tag", `position-${li.dataset.position}`);
+            tag.textContent = li.dataset.position;
 
-    const h = document.createElement("h2");
-    h.textContent = `Tier ${next}`;
+            const label = document.createElement("span");
+            const team = p.team ? ` (${p.team})` : "";
+            label.textContent = `${p.first_name || ""} ${p.last_name || ""}${team}`;
 
-    const ul = document.createElement("ul");
-    ul.id = `tier-${next}`;
-    ul.classList.add("player-list");
+            const rankInput = document.createElement("input");
+            rankInput.type = "number";
+            rankInput.min = 1;
+            rankInput.classList.add("rank-input");
+            // Use 'input' event for real-time validation/handling
+            rankInput.addEventListener("input", () => handleRankInput(li, rankInput));
 
-    div.appendChild(h);
-    div.appendChild(ul);
+            info.appendChild(tag);
+            info.appendChild(label);
 
-    document.getElementById("ranked-col").insertBefore(
-      div,
-      document.getElementById("add-tier")
-    );
+            li.appendChild(info);
+            li.appendChild(rankInput);
 
-    initSortable(ul, true);
-  });
+            return li;
+        }
 
-  /* LOAD PLAYERS */
-  const data = await fetchPlayers();
+        /* -------------------------
+              SORTABLE HANDLING
+        ------------------------- */
+        function initSortable(list, allowPut = true) {
+            if (!list) return;
 
-  allPlayers = Object.entries(data)
-    .map(([id, p]) => ({ id, ...p }))
-    .filter(p => ["QB", "RB", "WR", "TE"].includes((p.position || "").toUpperCase()))
-    .sort((a, b) => (a.last_name || "").localeCompare(b.last_name || ""));
+            // Destroy existing Sortable instance if it exists
+            if (sortableMap.has(list)) {
+                sortableMap.get(list).destroy();
+                sortableMap.delete(list);
+            }
 
-  const unrankedEl = document.getElementById("tier-unranked");
+            const sortable = new Sortable(list, {
+                group: { name: "tiers", pull: true, put: allowPut },
+                animation: 150,
+                onEnd: () => {
+                    updateRanks();
+                    saveDelayed();
+                }
+            });
 
-  allPlayers.forEach(p => {
-    const el = createPlayerElement(p.id, p);
-    unrankedEl.appendChild(el);
-  });
+            sortableMap.set(list, sortable);
+        }
 
-  /* init sortables */
-  document.querySelectorAll(".player-list").forEach(list => initSortable(list, true));
+        /* -------------------------
+              TIER MANAGEMENT
+        ------------------------- */
+        function createTierElement(tierNumber) {
+            const div = document.createElement("div");
+            div.classList.add("tier");
+            div.dataset.tier = tierNumber;
 
-  /* then apply saved ranking */
-  loadRankings();
-  updateRanks();
-});
-</script>
+            const h = document.createElement("h2");
+            h.textContent = `Tier ${tierNumber}`;
+
+            const ul = document.createElement("ul");
+            ul.id = `tier-${tierNumber}`;
+            ul.classList.add("player-list");
+
+            div.appendChild(h);
+            div.appendChild(ul);
+            return { tierDiv: div, tierList: ul };
+        }
+
+        function addTier(tierNumber) {
+            const { tierDiv, tierList } = createTierElement(tierNumber);
+
+            // Insert before the controls section
+            RANKED_COL.insertBefore(tierDiv, document.getElementById("controls-section"));
+            initSortable(tierList, true);
+            saveDelayed(); // Save new tier structure
+        }
+
+        // Generates the next available tier number
+        function getNextTierNumber() {
+            const existing = [...document.querySelectorAll(".tier")]
+                .map(t => t.dataset.tier)
+                .filter(t => t !== "unranked")
+                .map(Number);
+            return existing.length ? Math.max(...existing) + 1 : 1;
+        }
+
+        // Function to rebuild the entire tier structure from saved layout
+        function loadTierLayout() {
+            const savedLayout = JSON.parse(localStorage.getItem(TIER_LAYOUT_KEY) || "[]");
+
+            // 1. Remove all existing dynamically created tiers (keep the unranked and controls)
+            document.querySelectorAll(".tier").forEach(tierDiv => {
+                if (tierDiv.dataset.tier !== "unranked") {
+                    tierDiv.remove();
+                }
+            });
+
+            // 2. Rebuild tiers based on saved layout
+            if (savedLayout.length > 0) {
+                savedLayout.forEach(tierNum => {
+                    const { tierDiv, tierList } = createTierElement(tierNum);
+                    RANKED_COL.insertBefore(tierDiv, document.getElementById("controls-section"));
+                    initSortable(tierList, true);
+                });
+            } else {
+                // If no layout saved, create default Tier 1
+                addTier(1);
+            }
+        }
+
+
+        /* -------------------------
+              UPDATE RANKS
+        ------------------------- */
+        function updateRanks() {
+            document.querySelectorAll(".tier").forEach(tier => {
+                if (tier.dataset.tier === "unranked") return;
+
+                const players = tier.querySelectorAll(".player");
+                players.forEach((p, i) => {
+                    const input = p.querySelector(".rank-input");
+                    // Only update rank for players in a ranked tier
+                    if (input) {
+                        input.value = i + 1;
+                    }
+                });
+            });
+        }
+
+        /* -------------------------
+          MANUAL RANK INPUT
+        ------------------------- */
+        function handleRankInput(player, input) {
+            const tier = player.closest(".tier");
+            if (!tier || tier.dataset.tier === "unranked") {
+                input.value = ""; // Clear rank if moved to unranked
+                saveDelayed();
+                return;
+            }
+
+            const list = tier.querySelector(".player-list");
+            const players = [...list.children];
+
+            let newRank = parseInt(input.value);
+            if (isNaN(newRank) || newRank < 1) newRank = 1;
+            if (newRank > players.length) newRank = players.length;
+
+            const curIndex = players.indexOf(player);
+            if (curIndex === newRank - 1) return;
+
+            // If player is moved to a new list entirely, the rank is based on its new position
+            list.insertBefore(player, players[newRank - 1] || null);
+            updateRanks();
+            saveDelayed();
+        }
+
+        /* -------------------------
+                SAVE / LOAD
+        ------------------------- */
+        let saveTimeout;
+        function saveDelayed() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveRankings, 800);
+        }
+
+        function saveRankings() {
+            const rankingData = {};
+            const tierLayout = [];
+
+            document.querySelectorAll(".player-list").forEach(list => {
+                const listId = list.id;
+                rankingData[listId] = [...list.querySelectorAll(".player")].map(p => p.dataset.id);
+            });
+
+            // Save the current tier structure (e.g., [1, 2, 5] if tiers 3 and 4 were removed)
+            document.querySelectorAll(".tier").forEach(tierDiv => {
+                if (tierDiv.dataset.tier !== "unranked") {
+                    tierLayout.push(Number(tierDiv.dataset.tier));
+                }
+            });
+
+            localStorage.setItem(RANKINGS_KEY, JSON.stringify(rankingData));
+            localStorage.setItem(TIER_LAYOUT_KEY, JSON.stringify(tierLayout));
+
+            console.log("Rankings and Tier Layout saved locally.");
+        }
+
+        function loadRankings() {
+            const savedRankings = JSON.parse(localStorage.getItem(RANKINGS_KEY) || "{}");
+
+            // 1. Load the tier structure first
+            loadTierLayout();
+
+            // 2. Move players into their saved tiers
+            for (const [listId, ids] of Object.entries(savedRankings)) {
+                const list = document.getElementById(listId);
+                if (!list) continue;
+
+                ids.forEach(id => {
+                    // Look for the player element anywhere on the page
+                    const el = document.querySelector(`.player[data-id="${id}"]`);
+                    if (el) list.appendChild(el);
+                });
+            }
+
+            // All unplaced players remain in the unranked list by default.
+        }
+
+        /* -------------------------
+                FILTERING
+        ------------------------- */
+        function applyFilters() {
+            const filter = document.getElementById("filter");
+            const nameFilter = filter.value.toLowerCase();
+
+            document.querySelectorAll("#tier-unranked .player").forEach(p => {
+                const matchName = !nameFilter || p.dataset.name.includes(nameFilter);
+                const matchPos = !activePosFilter || p.dataset.position === activePosFilter;
+                p.style.display = matchName && matchPos ? "" : "none";
+            });
+        }
+
+        /* -------------------------
+              INIT APP
+        ------------------------- */
+        document.addEventListener("DOMContentLoaded", async () => {
+            const unrankedEl = document.getElementById("tier-unranked");
+
+            /* LOAD PLAYERS */
+            const rawData = await fetchPlayers();
+            allPlayers = Object.entries(rawData)
+                .map(([id, p]) => ({ id, ...p }))
+                .filter(p => ["QB", "RB", "WR", "TE"].includes((p.position || "").toUpperCase()) && p.active === true) // Added active check
+                .sort((a, b) => (a.last_name || "").localeCompare(b.last_name || ""));
+
+            allPlayers.forEach(p => {
+                const el = createPlayerElement(p.id, p);
+                unrankedEl.appendChild(el);
+            });
+
+            /* init sortables (unranked) */
+            initSortable(unrankedEl, true);
+
+            /* Load all tiers and players in them */
+            loadRankings();
+            updateRanks();
+
+
+            // ============================
+            // EVENT LISTENERS
+            // ============================
+
+            // Position Filter Buttons
+            document.querySelectorAll(".pos-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".pos-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    activePosFilter = btn.dataset.pos;
+                    applyFilters();
+                });
+            });
+
+            document.getElementById("filter").addEventListener("input", applyFilters);
+
+            // Controls
+            document.getElementById("reset").addEventListener("click", () => {
+                if (confirm("Are you sure you want to reset ALL rankings and tiers?")) {
+                    localStorage.removeItem(RANKINGS_KEY);
+                    localStorage.removeItem(TIER_LAYOUT_KEY);
+                    location.reload();
+                }
+            });
+
+            document.getElementById("save").addEventListener("click", saveRankings);
+
+            document.getElementById("add-tier").addEventListener("click", () => {
+                addTier(getNextTierNumber());
+            });
+
+
+            // ============================
+            // EXPORT / IMPORT JSON FUNCTIONS
+            // ============================
+
+            function exportRankingsJSON() {
+                const data = {
+                    tiers: {},
+                    layout: []
+                };
+
+                document.querySelectorAll(".player-list").forEach((list) => {
+                    data.tiers[list.id] = Array.from(list.querySelectorAll(".player")).map(
+                        (p) => p.dataset.id
+                    );
+                });
+
+                document.querySelectorAll(".tier").forEach(tierDiv => {
+                    if (tierDiv.dataset.tier !== "unranked") {
+                        data.layout.push(Number(tierDiv.dataset.tier));
+                    }
+                });
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], {
+                    type: "application/json",
+                });
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `fantasy_rankings_${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            function applyImportedRankings(imported) {
+                if (!imported.tiers || !imported.layout) {
+                    alert("Invalid rankings file format.");
+                    return;
+                }
+
+                // 1. Save the new layout and player rankings to local storage
+                localStorage.setItem(TIER_LAYOUT_KEY, JSON.stringify(imported.layout));
+                localStorage.setItem(RANKINGS_KEY, JSON.stringify(imported.tiers));
+
+                // 2. Re-load everything from the updated local storage
+                // This ensures the dynamic tier creation and player placement is correct.
+                loadRankings();
+                updateRanks();
+                alert("Rankings imported successfully!");
+            }
+
+            function importRankingsJSON(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+
+                        // Small check to wait for players to be loaded (if API was called)
+                        if (allPlayers.length > 0) {
+                            applyImportedRankings(imported);
+                        } else {
+                            // Fallback to wait if player data isn't ready (unlikely with caching)
+                            const waitForPlayers = setInterval(() => {
+                                if (allPlayers.length > 0) {
+                                    clearInterval(waitForPlayers);
+                                    applyImportedRankings(imported);
+                                }
+                            }, 100);
+                        }
+                    } catch (err) {
+                        alert("Invalid JSON file or format.");
+                        console.error(err);
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            // Wire export/import buttons
+            document.getElementById("export-json").addEventListener("click", exportRankingsJSON);
+
+            document.getElementById("import-json-btn").addEventListener("click", () => {
+                document.getElementById("import-json").click();
+            });
+
+            document.getElementById("import-json").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) importRankingsJSON(file);
+                // Clear file input so the same file can be imported again
+                e.target.value = '';
+            });
+        });
+    </script>
 
 </body>
+
 </html>
